@@ -1,7 +1,9 @@
 package pool;
 
 import ch.aplu.jgamegrid.GameGrid;
-import ch.aplu.jgamegrid.Location;
+//import ch.aplu.jgamegrid.Location;
+
+import java.util.List;
 
 public class PoolGame {
 
@@ -13,7 +15,7 @@ public class PoolGame {
         gameGrid.doRun();
 
         Ball cueBall = new Ball("assets/kugel_white.gif", 0);
-        gameGrid.addActor(cueBall, new Location(200,219));
+        gameGrid.addActor(cueBall, BallPositions.CUE_BALL_POSITION);
 
         String[] ballAssets = {
                 "assets/kugel_1.gif", "assets/kugel_2.gif", "assets/kugel_3.gif",
@@ -23,8 +25,11 @@ public class PoolGame {
                 "assets/kugel_13.gif", "assets/kugel_14.gif", "assets/kugel_15.gif"
         };
 
+        List<Integer> ballIndices = BallPositions.getRandomBallIndices();
+
         for (int i=0; i < BallPositions.TRIANGLE_POSITIONS.length; i++) {
-            Ball ball = new Ball(ballAssets[i], i+1);
+            int BallIndex = ballIndices.get(i);
+            Ball ball = new Ball(ballAssets[BallIndex - 1], BallIndex);
             gameGrid.addActor(ball, BallPositions.TRIANGLE_POSITIONS[i]);
         }
 
