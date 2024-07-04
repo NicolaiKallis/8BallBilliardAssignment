@@ -6,6 +6,9 @@ import java.awt.event.KeyEvent;
 
 
 public class Ball extends Actor {
+    private final int ballNumber;
+    private static final int BALL_SIZE = 20;
+
 
     private static final int[][] POCKETS = {
             {1,1}, {39,1}, {1,23}, {39,23},     // Corners
@@ -14,8 +17,13 @@ public class Ball extends Actor {
     private static final int POCKET_THRESHOLD = 1;
     private static final int MOVE_STEP = 1;
 
-    public Ball() {
-        super("assets/kugel_white.gif");
+    public Ball(String assetPath, int ballNumber) {
+        super(assetPath);
+        this.ballNumber = ballNumber;
+    }
+
+    public int getBallNumber() {
+        return ballNumber;
     }
 
     public void act() {
