@@ -1,4 +1,6 @@
 *.iml
 *.jar
-.idea/
 .DS_Store
+
+.idea/
+out/
