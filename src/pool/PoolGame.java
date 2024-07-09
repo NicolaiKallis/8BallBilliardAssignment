@@ -1,8 +1,10 @@
 package pool;
 
+import ch.aplu.jgamegrid.Actor;
 import ch.aplu.jgamegrid.GameGrid;
-//import ch.aplu.jgamegrid.Location;
+import ch.aplu.jgamegrid.Location;
 
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class PoolGame {
@@ -33,7 +35,25 @@ public class PoolGame {
             gameGrid.addActor(ball, BallPositions.TRIANGLE_POSITIONS[i]);
         }
 
+        // Add the cue (cue stick)
+        CueStick cue = new CueStick(cueBall);
+        gameGrid.addActor(cue, new Location(0, 0));
 
         gameGrid.show();
+
+        gameGrid.addActor(new Actor() {
+            private  double angle = 0;
+
+            public void act() {
+                if (gameGrid.isKeyPressed(KeyEvent.VK_LEFT)) {
+                    angle -= 5;
+                    cue.updatePosition(angle);
+                }
+                if (gameGrid.isKeyPressed(KeyEvent.VK_RIGHT)) {
+                    angle += 5;
+                    cue.updatePosition(angle);
+                }
+            }
+        }, new Location(0 , 0));
     }
 }
