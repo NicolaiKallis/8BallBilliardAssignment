@@ -22,7 +22,7 @@ public abstract class PoolGame extends GameGrid implements MouseListener {
 
         cueStick = new CueStick(cueBall);
 
-        Location initialStickPosition = new Location (cueBall.getX() + CueStick.DISTANCE_FROM_CUE_BALL, cueBall.getY());
+        Location initialStickPosition = new Location (cueBall.getX() - CueStick.DISTANCE_FROM_CUE_BALL, cueBall.getY());
 
         addActor(cueStick, initialStickPosition);
 
