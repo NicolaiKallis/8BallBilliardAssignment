@@ -37,7 +37,7 @@ public class PoolGame {
 
         // Add the cue (cue stick)
         CueStick cue = new CueStick(cueBall);
-        gameGrid.addActor(cue, new Location(0, 0));
+        gameGrid.addActor(cue, new Location(100, 200));
 
         gameGrid.show();
 
