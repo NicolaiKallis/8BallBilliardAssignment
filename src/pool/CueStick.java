@@ -12,7 +12,7 @@ import java.util.Objects;
 public class CueStick extends Actor {
     private static final String IMAGE_PATH = "assets/arrow.png";
     private static final double INITIAL_ANGLE = 0d;
-    private static final int DISTANCE_FROM_CUE_BALL = 50;
+    public static final int DISTANCE_FROM_CUE_BALL = 20;
     private CueBall cueBall; //--> TODO: Has to connected to the actual cue ball
 
 
@@ -20,7 +20,7 @@ public class CueStick extends Actor {
         super(IMAGE_PATH); // Initialize without an image
         Objects.requireNonNull(cueBall);
         this.cueBall = cueBall;
-        updatePosition(INITIAL_ANGLE); // Initialize position
+        // updatePosition(INITIAL_ANGLE); // Initialize position
 
     }
 
