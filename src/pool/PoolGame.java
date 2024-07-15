@@ -1,23 +1,81 @@
 package pool;
 
-import ch.aplu.jgamegrid.Actor;
+import ch.aplu.jgamegrid.GGMouse;
 import ch.aplu.jgamegrid.GameGrid;
 import ch.aplu.jgamegrid.Location;
 
-import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.List;
 
-public class PoolGame {
+public abstract class PoolGame extends GameGrid implements MouseListener {
+
+    private CueStick cueStick;
+    private CueBall cueBall;
+
+    public PoolGame() {
+        super(800, 438, 1, null, "assets/pool_table.png", false);
+        setSimulationPeriod(20);
+
+        cueBall = new CueBall();
+        addActor(cueBall, new Location(200, 219));
+
+        cueStick = new CueStick(cueBall);
+        addActor(cueStick, new Location(100, 200));
+
+
+
+        show();
+    }
+
+    //@Override
+    public boolean mouseEvent(GGMouse mouse) {
+        Location mouseLocation = new Location(mouse.getX(), mouse.getY());
+        if (mouse.getEvent() == GGMouse.lPress) {
+
+        } else if (mouse.getEvent() == GGMouse.lDrag) {
+            cueStick.mouseDragged();
+
+        } else if (mouse.getEvent() == GGMouse.lRelease) {
+            cueStick.mouseReleased();
+
+        } else if (mouse.getEvent() == GGMouse.lClick) {
+            cueStick.mousePressed();
+        }
+
+        return true;
+
+    }
 
     public static void main(String[] args) {
-        GameGrid gameGrid = new GameGrid(800, 438, 1, null, false);
-        gameGrid.hide();
-        gameGrid.setBgImagePath("assets/pool_table.png");
-        gameGrid.setTitle("8-Ball Pool Game");
-        gameGrid.doRun();
 
-        Ball cueBall = new Ball("assets/kugel_white.gif", 0);
-        gameGrid.addActor(cueBall, BallPositions.CUE_BALL_POSITION);
+        PoolGame poolGame = new PoolGame() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        };
+        poolGame.show();
 
         String[] ballAssets = {
                 "assets/kugel_1.gif", "assets/kugel_2.gif", "assets/kugel_3.gif",
@@ -32,28 +90,9 @@ public class PoolGame {
         for (int i=0; i < BallPositions.TRIANGLE_POSITIONS.length; i++) {
             int BallIndex = ballIndices.get(i);
             Ball ball = new Ball(ballAssets[BallIndex - 1], BallIndex);
-            gameGrid.addActor(ball, BallPositions.TRIANGLE_POSITIONS[i]);
+            poolGame.addActor(ball, BallPositions.TRIANGLE_POSITIONS[i]);
         }
 
-        // Add the cue (cue stick)
-        CueStick cue = new CueStick(cueBall);
-        gameGrid.addActor(cue, new Location(100, 200));
-
-        gameGrid.show();
-
-        gameGrid.addActor(new Actor() {
-            private  double angle = 0;
-
-            public void act() {
-                if (gameGrid.isKeyPressed(KeyEvent.VK_LEFT)) {
-                    angle -= 5;
-                    cue.updatePosition(angle);
-                }
-                if (gameGrid.isKeyPressed(KeyEvent.VK_RIGHT)) {
-                    angle += 5;
-                    cue.updatePosition(angle);
-                }
-            }
-        }, new Location(0 , 0));
+        new Location(0 , 0);
     }
 }
