@@ -33,15 +33,16 @@ public class PoolGame extends GameGrid implements MouseMotionListener {
     @Override
     public void mouseMoved(MouseEvent e) {
         Point mousePos = e.getPoint();
+        Location cueBallLocation = cueBall.getLocation();
+        Point cueBallPosition = new Point (cueBallLocation.x , cueBallLocation.y);
         Location mouseLocation = toLocationInGrid(mousePos);
         double angle = Math.atan2(mouseLocation.getY() - cueBall.getY(), mouseLocation.getX() - cueBall.getX());
-        cueStick.updatePosition(Math.toDegrees(angle));
+        cueStick.updatePosition(Math.toDegrees(angle), cueBallPosition);
         this.repaint();
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
     }
 
     public static void main(String[] args) {
