@@ -1,83 +1,51 @@
 package pool;
 
-import ch.aplu.jgamegrid.GGMouse;
 import ch.aplu.jgamegrid.GameGrid;
 import ch.aplu.jgamegrid.Location;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.List;
 
-public abstract class PoolGame extends GameGrid implements MouseListener {
+public class PoolGame extends GameGrid implements MouseMotionListener {
 
     private CueStick cueStick;
     private CueBall cueBall;
 
+
     public PoolGame() {
         super(800, 438, 1, null, "assets/pool_table.png", false);
         setSimulationPeriod(20);
+        addMouseMotionListener(this);
 
         cueBall = new CueBall();
-        addActor(cueBall, new Location(200, 219));
+        addActor(cueBall, BallPositions.CUE_BALL_POSITION);
 
-        cueStick = new CueStick(cueBall);
-
+        cueStick = new CueStick(cueBall, this);
         Location initialStickPosition = new Location (cueBall.getX() - CueStick.DISTANCE_FROM_CUE_BALL, cueBall.getY());
-
         addActor(cueStick, initialStickPosition);
 
-
-
         show();
+
     }
 
-    //@Override
-    public boolean mouseEvent(GGMouse mouse) {
-        Location mouseLocation = new Location(mouse.getX(), mouse.getY());
-        if (mouse.getEvent() == GGMouse.lPress) {
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        Point mousePos = e.getPoint();
+        Location mouseLocation = toLocationInGrid(mousePos);
+        double angle = Math.atan2(mouseLocation.getY() - cueBall.getY(), mouseLocation.getX() - cueBall.getX());
+        cueStick.updatePosition(Math.toDegrees(angle));
+        this.repaint();
+    }
 
-        } else if (mouse.getEvent() == GGMouse.lDrag) {
-            cueStick.mouseDragged();
-
-        } else if (mouse.getEvent() == GGMouse.lRelease) {
-            cueStick.mouseReleased();
-
-        } else if (mouse.getEvent() == GGMouse.lClick) {
-            cueStick.mousePressed();
-        }
-
-        return true;
+    @Override
+    public void mouseDragged(MouseEvent e) {
 
     }
 
     public static void main(String[] args) {
-
-        PoolGame poolGame = new PoolGame() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        };
+        PoolGame poolGame = new PoolGame();
         poolGame.show();
 
         String[] ballAssets = {
