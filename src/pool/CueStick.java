@@ -57,7 +57,7 @@ public class CueStick extends Actor {
         rotate(cueBallPosition, correctedAngle);
     }
 
-    public void hitCueBall(double angle, Point cueBallPosition) {
+    public void pullBack(double angle, Point cueBallPosition) {
         double correctedAngle = angle + 180;
         double radians = Math.toRadians(angle);
 
@@ -71,6 +71,15 @@ public class CueStick extends Actor {
         setDirection(correctedAngle);
         rotate(cueBallPosition, correctedAngle);
         //updatePosition(correctedAngle, Goal);
+    }
+
+    public void hitCueBall(double angle, Point cueBallPosition) {
+        double raadians = Math.toRadians(angle);
+
+        int x = (int) cueBall.getX();
+        int y = (int) cueBall.getY();
+
+        setLocation(new Location(x,y));
     }
 
 }

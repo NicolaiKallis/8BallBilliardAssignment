@@ -32,6 +32,7 @@ public class PoolGame extends GameGrid implements MouseMotionListener, MouseList
 
     }
 
+    //TODO: First 5 lines in helper method
     @Override
     public void mouseMoved(MouseEvent e) {
         Point mousePos = e.getPoint();
@@ -44,6 +45,8 @@ public class PoolGame extends GameGrid implements MouseMotionListener, MouseList
         this.repaint();
     }
 
+
+    //TODO: First 5 lines in helper method
     @Override
     public void mouseDragged(MouseEvent e) {
         Point mousePos = e.getPoint();
@@ -52,14 +55,26 @@ public class PoolGame extends GameGrid implements MouseMotionListener, MouseList
         Location cueBallLocation = cueBall.getLocation();
         Point cueBallPosition = new Point (cueBallLocation.x , cueBallLocation.y);
         double angle = Math.atan2(mouseLocation.getY() - cueBall.getY(), mouseLocation.getX() - cueBall.getX());
-        cueStick.hitCueBall(Math.toDegrees(angle), cueBallPosition);
+        cueStick.pullBack(Math.toDegrees(angle), cueBallPosition);
         this.repaint();
 
     }
 
+    //TODO: First 5 lines in helper method
     @Override
     public void mouseReleased(MouseEvent e) {
         System.out.println("Released");
+        Point mousePos = e.getPoint();
+        Location mouseLocation = toLocationInGrid(mousePos);
+
+        Location cueBallLocation = cueBall.getLocation();
+        Point cueBallPosition = new Point (cueBallLocation.x , cueBallLocation.y);
+        double angle = Math.atan2(mouseLocation.getY() - cueBall.getY(), mouseLocation.getX() - cueBall.getX());
+
+
+        cueStick.hitCueBall(angle, cueBallPosition);
+
+        this.repaint();
     }
 
     @Override
