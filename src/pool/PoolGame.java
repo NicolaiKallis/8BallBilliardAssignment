@@ -5,10 +5,11 @@ import ch.aplu.jgamegrid.Location;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.List;
 
-public class PoolGame extends GameGrid implements MouseMotionListener {
+public class PoolGame extends GameGrid implements MouseMotionListener, MouseListener {
 
     private CueStick cueStick;
     private CueBall cueBall;
@@ -18,6 +19,7 @@ public class PoolGame extends GameGrid implements MouseMotionListener {
         super(800, 438, 1, null, "assets/pool_table.png", false);
         setSimulationPeriod(20);
         addMouseMotionListener(this);
+        addMouseListener(this);
 
         cueBall = new CueBall();
         addActor(cueBall, BallPositions.CUE_BALL_POSITION);
@@ -33,9 +35,10 @@ public class PoolGame extends GameGrid implements MouseMotionListener {
     @Override
     public void mouseMoved(MouseEvent e) {
         Point mousePos = e.getPoint();
+        Location mouseLocation = toLocationInGrid(mousePos);
+
         Location cueBallLocation = cueBall.getLocation();
         Point cueBallPosition = new Point (cueBallLocation.x , cueBallLocation.y);
-        Location mouseLocation = toLocationInGrid(mousePos);
         double angle = Math.atan2(mouseLocation.getY() - cueBall.getY(), mouseLocation.getX() - cueBall.getX());
         cueStick.updatePosition(Math.toDegrees(angle), cueBallPosition);
         this.repaint();
@@ -43,6 +46,37 @@ public class PoolGame extends GameGrid implements MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
+        Point mousePos = e.getPoint();
+        Location mouseLocation = toLocationInGrid(mousePos);
+
+        Location cueBallLocation = cueBall.getLocation();
+        Point cueBallPosition = new Point (cueBallLocation.x , cueBallLocation.y);
+        double angle = Math.atan2(mouseLocation.getY() - cueBall.getY(), mouseLocation.getX() - cueBall.getX());
+        cueStick.hitCueBall(Math.toDegrees(angle), cueBallPosition);
+        this.repaint();
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        System.out.println("Released");
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        System.out.println("Clicked");
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
     }
 
     public static void main(String[] args) {
