@@ -13,6 +13,7 @@ public class CueStick extends Actor {
     private static final String IMAGE_PATH = "assets/arrow.png";
     private static final double INITIAL_ANGLE = 0d;
     public static final int DISTANCE_FROM_CUE_BALL = 20;
+    private static final int MAX_DISTANCE_FROM_CUE_BALL = 90;
     private CueBall cueBall; //--> TODO: Has to connected to the actual cue ball
     private GameGrid gameGrid;
 
@@ -40,16 +41,36 @@ public class CueStick extends Actor {
         }
     }
 
+    // TODO: implement correctly: Cue Stick should sit in the same direction as mouse
+    // TODO: Naming convention should be improved
     public void updatePosition(double angle, Point cueBallPosition) {
+        double correctedAngle = angle + 180;
         double radians = Math.toRadians(angle);
+
         int x = (int) (cueBall.getX() + DISTANCE_FROM_CUE_BALL * Math.cos(radians));
         int y = (int) (cueBall.getY() + DISTANCE_FROM_CUE_BALL * Math.sin(radians));
+
         setLocation(new Location(x,y));
-        setDirection(angle+180);
-        double correctedAngle = angle - 45;
-        System.out.println(angle);
-        System.out.println(correctedAngle);
+        //System.out.println(angle);
+        //System.out.println(correctedAngle);
+        setDirection(correctedAngle);
         rotate(cueBallPosition, correctedAngle);
+    }
+
+    public void hitCueBall(double angle, Point cueBallPosition) {
+        double correctedAngle = angle + 180;
+        double radians = Math.toRadians(angle);
+
+        int x = (int) (cueBall.getX() + MAX_DISTANCE_FROM_CUE_BALL * Math.cos(radians));
+        int y = (int) (cueBall.getY() + MAX_DISTANCE_FROM_CUE_BALL * Math.sin(radians));
+
+        setLocation(new Location(x,y));
+        Point Goal = new Point(x,y);
+        //System.out.println(angle);
+        //System.out.println(correctedAngle);
+        setDirection(correctedAngle);
+        rotate(cueBallPosition, correctedAngle);
+        //updatePosition(correctedAngle, Goal);
     }
 
 }
