@@ -5,7 +5,6 @@ import java.awt.*;
 
 public class PoolGame{
 
-    // TODO: refactor if time allows
     public static void main(String[] args) {
         JFrame gameFrame = GameFrame.createGameFrame();
         JLabel gameTimer = GameFrame.createGameTimerLabel();
