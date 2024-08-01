@@ -20,15 +20,23 @@ public class GameFrame {
     }
 
     public static JLabel createGameTimerLabel() {
-        JLabel gameTimer = new JLabel("00:00");
-        gameTimer.setHorizontalAlignment(JLabel.CENTER);
+        JLabel gameTimer = new JLabel("Remaining time: %02d:%02d");
+        gameTimer.setHorizontalAlignment(JLabel.RIGHT);
         gameTimer.setFont(new Font("Arial", Font.BOLD, 18));
 
         return gameTimer;
     }
 
+    public static JLabel createStatusLabel() {
+        JLabel gameStatus = new JLabel("TBD");
+        gameStatus.setHorizontalAlignment(JLabel.CENTER);
+        gameStatus.setFont(new Font("Arial", Font.BOLD, 18));
+
+        return gameStatus;
+    }
+
     public static JLabel createBallCounterLabel() {
-        JLabel ballCounterLabel = new JLabel("Balls left: 0");
+        JLabel ballCounterLabel = new JLabel("Balls pocketed: 0");
         ballCounterLabel.setHorizontalAlignment(JLabel.LEFT);
         ballCounterLabel.setFont(new Font("Arial", Font.BOLD, 18));
 
