@@ -8,7 +8,7 @@ import java.util.List;
 public class BallPositions {
     public static final Location CUE_BALL_POSITION = new Location(200, 219);
 
-    public static final Location [] TRIANGLE_POSITIONS = {
+    public static final Location[] TRIANGLE_POSITIONS = {
             // first row
             new Location(580, 219),
             // second row
@@ -22,13 +22,13 @@ public class BallPositions {
     };
 
     public static List<Integer> getRandomBallIndices() {
-        List <Integer> solids = new ArrayList<>();
-        List <Integer> stripes = new ArrayList<>();
+        List<Integer> solids = new ArrayList<>();
+        List<Integer> stripes = new ArrayList<>();
 
-        for (int i=1; i <= 7; i++) {
+        for (int i = 1; i <= 7; i++) {
             solids.add(i);
         }
-        for (int i=9; i <= 15; i++) {
+        for (int i = 9; i <= 15; i++) {
             stripes.add(i);
         }
 
@@ -41,7 +41,7 @@ public class BallPositions {
         ballIndices.addAll(stripes);
 
         // Add 8-ball in the correct position
-        ballIndices.add(4,8);
+        ballIndices.add(4, 8);
 
         // Ensures different colors for position 11 and 15
         if ((ballIndices.get(10) >= 1 && ballIndices.get(10) <= 7) == (ballIndices.get(13) >= 1 && ballIndices.get(13) <= 7)) {
@@ -64,7 +64,6 @@ public class BallPositions {
 
             }
         }
-
         return ballIndices;
     }
 }
