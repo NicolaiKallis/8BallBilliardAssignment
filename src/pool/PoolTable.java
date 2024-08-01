@@ -1,11 +1,9 @@
 package pool;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import ch.aplu.jgamegrid.GGVector;
-import ch.aplu.jgamegrid.GGCircle;
-import ch.aplu.jgamegrid.GameGrid;
-import ch.aplu.jgamegrid.Location;
+import ch.aplu.jgamegrid.*;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -13,7 +11,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 public class PoolTable extends GameGrid implements MouseMotionListener,
-        MouseListener {
+        MouseListener, GGActorCollisionListener {
 
     private static final int TABLE_LENGTH               = 800;
     private static final int TABLE_WIDTH                = 438;
@@ -21,6 +19,7 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
 
     private static final int CELL_SIZE                  = 1;
 
+    // phyiscal properties sourced from https://billiards.colostate.edu/faq/physics/physical-properties/
     public static final double FRICTION_CLOTH_BALL      = 0.2;
     private static final GGVector POCKET_TOP_LEFT       = new GGVector(25, 25);
     private static final GGVector POCKET_TOP_MIDDLE     = new GGVector(400, 25);
@@ -35,7 +34,7 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
     // increased radius even further than 2:1 for UX
     private static final int POCKET_RADIUS              = 50;
 
-    public static final ArrayList<GGCircle> pockets = new ArrayList();
+    public static final ArrayList<GGCircle> pockets = new ArrayList<>();
 
     static {
             pockets.add(new GGCircle(POCKET_TOP_LEFT, POCKET_RADIUS));
@@ -46,11 +45,16 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
             pockets.add(new GGCircle(POCKET_BOTTOM_RIGHT, POCKET_RADIUS));
     }
 
+    private static final double FACTOR_BALL_BALL_COLLISION =
+            1 - Ball.FRICTION_BALL_BALL;
 
     private static final String TABLE_ASSET = "assets/pool_table.png";
 
     private CueStick cueStick;
     private CueBall cueBall;
+
+
+    private final ArrayList<Actor> playingBalls = new ArrayList<>();
 
     public PoolTable() {
         super(TABLE_LENGTH, TABLE_WIDTH, CELL_SIZE, null, TABLE_ASSET,false);
@@ -70,17 +74,26 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
     }
 
     public void setBallsToStartPositions(){
-//        List<Integer> ballIndices = BallPositions.getRandomBallIndices();
-//
-//        for (int i=0; i < BallPositions.TRIANGLE_POSITIONS.length; i++) {
-//            int BallIndex = ballIndices.get(i);
-//            Ball ball = new Ball(Ball.ballAssets[BallIndex - 1], BallIndex);
-//            addActor(ball, BallPositions.TRIANGLE_POSITIONS[i]);
-//        }
+        List<Integer> ballIndices = BallPositions.getRandomBallIndices();
 
-        cueBall = new CueBall(TABLE_WALL_OFFSET);
+        for (int i=0; i < BallPositions.TRIANGLE_POSITIONS.length; i++) {
+            int BallIndex = ballIndices.get(i);
+            Ball ball = new Ball(Ball.ballAssets[BallIndex - 1], BallIndex);
+            addActor(ball, BallPositions.TRIANGLE_POSITIONS[i]);
+            ball.LocationToPosition();
+            playingBalls.add(ball);
+            ball.addCollisionActors(playingBalls);
+            ball.addActorCollisionListener(this);
+
+            //ballNum = ball.getBallNumber();
+
+        }
+
+        cueBall = new CueBall();
         addActor(cueBall, BallPositions.CUE_BALL_POSITION);
         cueBall.LocationToPosition();
+        cueBall.addCollisionActors(playingBalls);
+        cueBall.addActorCollisionListener(this);
     }
 
     public void setCueStickToStartPosition() {
@@ -89,6 +102,40 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
         Location initialCueStickPosition = new Location(cueBall.getX() - CueStick.DISTANCE_FROM_CUE_BALL,
                 cueBall.getY());
         addActor(cueStick, initialCueStickPosition);
+    }
+
+    @Override
+    public int collide(Actor actor1, Actor actor2){
+        if (actor1 instanceof Ball && actor2 instanceof Ball) {
+            Ball ball1 = (Ball) actor1;
+            Ball ball2 = (Ball) actor2;
+
+            // vector pointing from actor2 to actor1
+            GGVector distanceBalls =
+                    ball1.getterPos().sub(ball2.getterPos());
+
+            if (distanceBalls.magnitude2() == 0) {
+                // Avoid division by zero
+                return 15;
+            }
+
+            GGVector velA = ball1.getterVel();
+            GGVector velB = ball2.getterVel();
+
+            double dotProductA =
+                    distanceBalls.dot(velA.sub(velB)) / distanceBalls.magnitude2();
+            double dotProductB =
+                    distanceBalls.dot(velB.sub(velA)) / distanceBalls.magnitude2();
+
+            GGVector velAPost =
+                    velA.sub(distanceBalls.mult(dotProductA * (FACTOR_BALL_BALL_COLLISION)));
+            GGVector velBPost =
+                    velB.sub(distanceBalls.mult(dotProductB * (FACTOR_BALL_BALL_COLLISION)));
+
+            ball1.setterVel(velAPost);
+            ball2.setterVel(velBPost);
+        }
+        return 15;
     }
 
 
