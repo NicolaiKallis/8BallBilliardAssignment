@@ -11,14 +11,12 @@ import java.time.Instant;
 
 public class Ball extends Actor {
     private final int ballNumber;
-    private PoolTable poolTable;
-    public static final int BALL_SIZE = 20;
-    private static final int POCKET_THRESHOLD = 1;
+    private final PoolTable poolTable;
+    public static final int BALL_RADIUS = 20;
 
-    // phyiscal properties sourced from https://billiards.colostate.edu/faq/physics/physical-properties/
+    // physical properties sourced from https://billiards.colostate.edu/faq/physics/physical-properties/
     public static final double FRICTION_BALL_BALL = 0.055;
-    //TODO: calculate somehow
-    private static final double FRICTIION_STOP = 5;
+    private static final double BALL_VEL_STOP_CONDITION = 15;
 
     private static final int table_wall_offset = PoolTable.TABLE_WALL_OFFSET;
 
@@ -52,14 +50,13 @@ public class Ball extends Actor {
             else if (isInPocket()) {
                 handlePocketCollision();
             }
-
-            if (vel.magnitude() < FRICTIION_STOP) {
+            if (vel.magnitude() < BALL_VEL_STOP_CONDITION) {
                 haltBall();
             }
         }
 
         double dt = Duration.between(AccessTime , Instant.now()).toMillis() / 1000f;
-        //System.out.println(dt);
+
         double dx = vel.x * dt;
         double dy = vel.y * dt;
 
@@ -73,10 +70,6 @@ public class Ball extends Actor {
 
     public void LocationToPosition () {
         pos = new GGVector(getLocation().x, getLocation().y);
-    }
-
-    public int getBallNumber() {
-        return ballNumber;
     }
 
     private boolean isInTableBed() {
