@@ -1,6 +1,10 @@
 *.iml
 *.jar
 .DS_Store
+*.zip
+*.project
+*.classpath
+*.class
 
 .idea/
 
