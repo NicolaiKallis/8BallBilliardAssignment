@@ -11,4 +11,11 @@ public class CueBall extends Ball {
     public CueBall(int wallOffset) {
         super(IMAGE_PATH, 0);
     }
+
+    @Override
+    protected void handlePocketCollision() {
+        haltBall();
+        setLocation(BallPositions.CUE_BALL_POSITION);
+        LocationToPosition();
+    }
 }
