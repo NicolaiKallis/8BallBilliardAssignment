@@ -14,6 +14,9 @@ public class Ball extends Actor {
     private static final int BALL_SIZE = 20;
     private static final int POCKET_THRESHOLD = 1;
 
+    // phyiscal properties sourced from https://billiards.colostate.edu/faq/physics/physical-properties/
+    public static final double FRICTION_BALL_BALL = 0.055;
+
     private static final int table_wall_offset = PoolTable.TABLE_WALL_OFFSET;
 
     private GGVector pos = new GGVector(0,0);
@@ -109,11 +112,21 @@ public class Ball extends Actor {
         removeSelf();
     }
 
-    public void setterVel(GGVector velocity) {
-        vel = velocity;
+    protected void haltBall() {
+        vel = new GGVector(0, 0);
+    }
+
+    public GGVector getterPos() {
+        return pos.clone();
     }
 
     public GGVector getterVel() {
         return vel.clone();
     }
+
+    public void setterVel(GGVector velocity) {
+        vel = velocity;
+    }
+
+
 }
