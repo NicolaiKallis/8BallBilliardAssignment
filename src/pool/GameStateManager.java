@@ -24,8 +24,7 @@ public class GameStateManager {
 
     public boolean isNewGameCalled = false;
     private long startTime;
-
-    private double initialTime = 120.0; // [s]
+    private double initialTime = 120.0;     // [s]
 
     public String NewGame(){
         this.startTime = System.currentTimeMillis();
@@ -71,7 +70,6 @@ public class GameStateManager {
     public boolean checkLosingCondition() {
         if(getRemainingTime() <= 0){
             setCurrentState(GameState.GAME_OVER_LOSS);
-            //TODO: How to restart game after short delay?
             return true;
         }
         return false;
