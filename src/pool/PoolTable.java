@@ -23,7 +23,8 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
     public static final double FRICTION_CLOTH_BALL      = 0.2;
     private static final GGVector POCKET_TOP_LEFT       = new GGVector(25, 25);
     private static final GGVector POCKET_TOP_MIDDLE     = new GGVector(400, 25);
-    private static final GGVector POCKT_TOP_RIGHT       = new GGVector(775, 25);
+    private static final GGVector POCKET_TOP_RIGHT       = new GGVector(775,
+            25);
     private static final GGVector POCKET_BOTTOM_LEFT    = new GGVector(25, 413);
     private static final GGVector POCKET_BOTTOM_MIDDLE  = new GGVector(400, 413);
     private static final GGVector POCKET_BOTTOM_RIGHT   = new GGVector(775,
@@ -39,7 +40,7 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
     static {
             pockets.add(new GGCircle(POCKET_TOP_LEFT, POCKET_RADIUS));
             pockets.add(new GGCircle(POCKET_TOP_MIDDLE, POCKET_RADIUS));
-            pockets.add(new GGCircle(POCKT_TOP_RIGHT, POCKET_RADIUS));
+            pockets.add(new GGCircle(POCKET_TOP_RIGHT, POCKET_RADIUS));
             pockets.add(new GGCircle(POCKET_BOTTOM_LEFT, POCKET_RADIUS));
             pockets.add(new GGCircle(POCKET_BOTTOM_MIDDLE, POCKET_RADIUS));
             pockets.add(new GGCircle(POCKET_BOTTOM_RIGHT, POCKET_RADIUS));
@@ -55,6 +56,7 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
 
 
     private final ArrayList<Actor> playingBalls = new ArrayList<>();
+    public final ArrayList<Ball> activeBalls = new ArrayList<>();
 
     public PoolTable() {
         super(TABLE_LENGTH, TABLE_WIDTH, CELL_SIZE, null, TABLE_ASSET,false);
@@ -70,7 +72,17 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
 
     @Override
     public void act() {
-        this.repaint();
+        System.out.println("Printing velocities of all active balls:");
+        for (int i = 0; i < activeBalls.size(); i++) {
+            Ball ball = activeBalls.get(i);
+            GGVector velocity = ball.getterVel();
+            System.out.println("Ball " + i + " - Velocity: (" + velocity.x + ", " + velocity.y + ")");
+            if (allBallStopped(activeBalls)) {
+                System.out.println("STOP");
+            }
+
+            this.repaint();
+        }
     }
 
     public void setBallsToStartPositions(){
@@ -78,10 +90,12 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
 
         for (int i=0; i < BallPositions.TRIANGLE_POSITIONS.length; i++) {
             int BallIndex = ballIndices.get(i);
-            Ball ball = new Ball(Ball.ballAssets[BallIndex - 1], BallIndex);
+            Ball ball = new Ball(Ball.ballAssets[BallIndex - 1], BallIndex,
+                    this);
             addActor(ball, BallPositions.TRIANGLE_POSITIONS[i]);
             ball.LocationToPosition();
             playingBalls.add(ball);
+            activeBalls.add(ball);
             ball.addCollisionActors(playingBalls);
             ball.addActorCollisionListener(this);
 
@@ -89,9 +103,10 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
 
         }
 
-        cueBall = new CueBall();
+        cueBall = new CueBall(this);
         addActor(cueBall, BallPositions.CUE_BALL_POSITION);
         cueBall.LocationToPosition();
+        activeBalls.add(cueBall);
         cueBall.addCollisionActors(playingBalls);
         cueBall.addActorCollisionListener(this);
     }
@@ -134,8 +149,34 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
 
             ball1.setterVel(velAPost);
             ball2.setterVel(velBPost);
+
+            double absDistanceBalls = distanceBalls.magnitude();
+            double overlap = Ball.BALL_SIZE - absDistanceBalls;
+
+            // TODO: DEBUG
+            if (overlap > 0) {
+                GGVector collisionDirection = distanceBalls.mult(1 / absDistanceBalls);
+                double forceMag = overlap * Ball.FRICTION_BALL_BALL;
+
+                ball1.setterVel(ball1.getterVel().add(collisionDirection.mult(forceMag)));
+                ball2.setterVel(ball2.getterVel().sub(collisionDirection.mult(forceMag)));
+            }
         }
         return 15;
+    }
+
+    private boolean allBallStopped(ArrayList<Ball> activeBalls) {
+        for (Ball ball : activeBalls) {
+            GGVector vel = ball.getterVel();
+            if (vel.x != 0 || vel.y != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void passivateBall(Ball ball) {
+        activeBalls.remove(ball);
     }
 
 
