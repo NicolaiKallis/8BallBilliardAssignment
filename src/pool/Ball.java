@@ -11,11 +11,14 @@ import java.time.Instant;
 
 public class Ball extends Actor {
     private final int ballNumber;
-    private static final int BALL_SIZE = 20;
+    private PoolTable poolTable;
+    public static final int BALL_SIZE = 20;
     private static final int POCKET_THRESHOLD = 1;
 
     // phyiscal properties sourced from https://billiards.colostate.edu/faq/physics/physical-properties/
     public static final double FRICTION_BALL_BALL = 0.055;
+    //TODO: calculate somehow
+    private static final double FRICTIION_STOP = 5;
 
     private static final int table_wall_offset = PoolTable.TABLE_WALL_OFFSET;
 
@@ -32,9 +35,10 @@ public class Ball extends Actor {
             "assets/kugel_13.gif", "assets/kugel_14.gif", "assets/kugel_15.gif"
     };
 
-    public Ball(String assetPath, int ballNumber) {
+    public Ball(String assetPath, int ballNumber, PoolTable poolTable) {
         super(assetPath);
         this.ballNumber = ballNumber;
+        this.poolTable = poolTable;
         AccessTime = Instant.now();
     }
 
@@ -47,6 +51,10 @@ public class Ball extends Actor {
             }
             else if (isInPocket()) {
                 handlePocketCollision();
+            }
+
+            if (vel.magnitude() < FRICTIION_STOP) {
+                haltBall();
             }
         }
 
@@ -108,8 +116,9 @@ public class Ball extends Actor {
     }
 
     protected void handlePocketCollision() {
-        System.out.println("drin");
+        haltBall();
         removeSelf();
+        poolTable.passivateBall(this);
     }
 
     protected void haltBall() {
