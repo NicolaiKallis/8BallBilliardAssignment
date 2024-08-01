@@ -33,17 +33,20 @@ public class PoolTable extends GameGrid implements MouseMotionListener,
     // assumed a ratio of 2:1 (pocket size: balls)
     // assumption made from: https://www.dimensions.com/element/billiards-pool-table-pockets
     // increased radius even further than 2:1 for UX
-    private static final int POCKET_RADIUS              = 50;
+    // POCKET_RADIUS_MIDDLE is slightly too large but makes the UX way better.
+    // If reduced to 30 a correct hit is difficult to achieve.
+    private static final int POCKET_RADIUS_MIDDLE       = 35;
+    private static final int POCKET_RADIUS_CORNERS      = 45;
 
     public static final ArrayList<GGCircle> pockets = new ArrayList<>();
 
     static {
-            pockets.add(new GGCircle(POCKET_TOP_LEFT, POCKET_RADIUS));
-            pockets.add(new GGCircle(POCKET_TOP_MIDDLE, POCKET_RADIUS));
-            pockets.add(new GGCircle(POCKET_TOP_RIGHT, POCKET_RADIUS));
-            pockets.add(new GGCircle(POCKET_BOTTOM_LEFT, POCKET_RADIUS));
-            pockets.add(new GGCircle(POCKET_BOTTOM_MIDDLE, POCKET_RADIUS));
-            pockets.add(new GGCircle(POCKET_BOTTOM_RIGHT, POCKET_RADIUS));
+            pockets.add(new GGCircle(POCKET_TOP_LEFT, POCKET_RADIUS_CORNERS));
+            pockets.add(new GGCircle(POCKET_TOP_MIDDLE, POCKET_RADIUS_MIDDLE));
+            pockets.add(new GGCircle(POCKET_TOP_RIGHT, POCKET_RADIUS_CORNERS));
+            pockets.add(new GGCircle(POCKET_BOTTOM_LEFT, POCKET_RADIUS_CORNERS));
+            pockets.add(new GGCircle(POCKET_BOTTOM_MIDDLE, POCKET_RADIUS_MIDDLE));
+            pockets.add(new GGCircle(POCKET_BOTTOM_RIGHT, POCKET_RADIUS_CORNERS));
     }
 
     private static final double FACTOR_BALL_BALL_COLLISION =
