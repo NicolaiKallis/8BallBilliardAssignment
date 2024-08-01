@@ -4,6 +4,9 @@ import ch.aplu.jgamegrid.Actor;
 import ch.aplu.jgamegrid.GGVector;
 import ch.aplu.jgamegrid.Location;
 
+import java.time.Duration;
+import java.time.Instant;
+
 
 public class Ball extends Actor {
     private final int ballNumber;
@@ -14,13 +17,12 @@ public class Ball extends Actor {
     };
     private static final int POCKET_THRESHOLD = 1;
 
-    private static int table_wall_offset = PoolTable.TABLE_WALL_OFFSET;
-
-    private float dx, dy;
-    final float FRICTION = 0.05f;
+    private static final int table_wall_offset = PoolTable.TABLE_WALL_OFFSET;
 
     private GGVector pos = new GGVector(0,0);
     private GGVector vel = new GGVector(0,0);
+
+    private Instant AccessTime;
 
     public static final String[] ballAssets = {
             "assets/kugel_1.gif", "assets/kugel_2.gif", "assets/kugel_3.gif",
@@ -33,59 +35,34 @@ public class Ball extends Actor {
     public Ball(String assetPath, int ballNumber) {
         super(assetPath);
         this.ballNumber = ballNumber;
+        AccessTime = Instant.now();
     }
 
     @Override
     public void act() {
         LocationToPosition();
         if (!isInTableBed()) {
+            System.out.println("vel_X: " + vel.x);
+            System.out.println("vel_Y: " + vel.y);
             keepInBed();
         }
+
+        double dt = Duration.between(AccessTime , Instant.now()).toMillis() / 1000f;
+        //System.out.println(dt);
+        double dx = vel.x * dt;
+        double dy = vel.y * dt;
+
+        vel = vel.sub(vel.mult(PoolTable.FRICTION_CLOTH_BALL*dt));
+        pos = pos.add(new GGVector(dx, dy));
+
+        setLocation(new Location((int)pos.x, (int)pos.y));
+
+        AccessTime = Instant.now();
     }
 
     public void LocationToPosition () {
         pos = new GGVector(getLocation().x, getLocation().y);
     }
-
-    void hit(float force, float angle) {
-        //System.out.println("angle " + angle);
-        dx = (float) (Math.cos(angle) * force);
-        dy = (float) (Math.sin(angle) * force);
-        //System.out.println("dx " + dx);
-        //System.out.println("dy " + dy);
-
-        updateHitPosition(dx, dy);
-    }
-
-    void updateHitPosition(float dx, float dy) {
-        while (Math.abs(dx) != 0 && Math.abs(dy) != 0) {
-            float x = getX();
-            float y = getY();
-
-            x += dx;
-            y += dy;
-
-            if (dx > 0) dx -= FRICTION;
-            else if (dx < 0) dx += FRICTION;
-
-            if (dy > 0) dy -= FRICTION;
-            else if (dy < 0) dy += FRICTION;
-
-            if (Math.abs(dx) < FRICTION) dx = 0;
-            if (Math.abs(dy) < FRICTION) dy = 0;
-
-            int x_int = Math.round(x);
-            int y_int = Math.round(y);
-
-            System.out.println(x);
-            System.out.println(y);
-
-            setX(x_int);
-            setY(y_int);
-        }
-    }
-
-
 
     public int getBallNumber() {
         return ballNumber;
@@ -111,10 +88,34 @@ public class Ball extends Actor {
                 pos.y >= table_wall_offset          &&
                 pos.x <= 800 - table_wall_offset    &&
                 pos.y <= 438 - table_wall_offset);
-
     }
 
     private void keepInBed() {
-        System.out.println("implementation needed.");
+        final double dampingFactor = 0.9;
+
+        if (pos.x <= table_wall_offset) {
+            vel.x = -vel.x * dampingFactor;
+            pos.x = table_wall_offset + 1;
+        } else if (pos.x >= 800 - table_wall_offset) {
+            vel.x = -vel.x * dampingFactor;
+            pos.x = 800 - table_wall_offset - 1;
+        }
+
+        if (pos.y <= table_wall_offset) {
+            vel.y = -vel.y * dampingFactor;
+            pos.y = table_wall_offset + 1;
+        } else if (pos.y >= 438 - table_wall_offset) {
+            vel.y = -vel.y * dampingFactor;
+            pos.y = 438 - table_wall_offset - 1;
+        }
+    }
+
+    public void setterVel(GGVector velocity) {
+        System.out.println(velocity);
+        vel = velocity;
+    }
+
+    public GGVector getterVel() {
+        return vel.clone();
     }
 }
