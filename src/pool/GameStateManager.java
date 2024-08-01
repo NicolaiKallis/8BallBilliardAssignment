@@ -1,21 +1,15 @@
 package pool;
 
 public class GameStateManager {
-    private static GameStateManager instance;
 
     public boolean isNewGameCalled = false;
 
     private long startTime;
     private double initialTime = 120.0; // [s]
 
+    private static final GameStateManager instance = new GameStateManager();
 
-
-    private GameStateManager(){}
-
-    public static GameStateManager lazyGetInstance() {
-        if (instance == null){
-            instance = new GameStateManager();
-        }
+    public static GameStateManager getInstance() {
         return instance;
     }
 
