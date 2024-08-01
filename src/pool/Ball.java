@@ -1,6 +1,7 @@
 package pool;
 
 import ch.aplu.jgamegrid.Actor;
+import ch.aplu.jgamegrid.GGCircle;
 import ch.aplu.jgamegrid.GGVector;
 import ch.aplu.jgamegrid.Location;
 
@@ -11,10 +12,6 @@ import java.time.Instant;
 public class Ball extends Actor {
     private final int ballNumber;
     private static final int BALL_SIZE = 20;
-    private static final int[][] POCKETS = {
-            {1,1}, {39,1}, {1,23}, {39,23},     // Corners
-            {19, 1}, {19,23}                    // Middle pockets
-    };
     private static final int POCKET_THRESHOLD = 1;
 
     private static final int table_wall_offset = PoolTable.TABLE_WALL_OFFSET;
@@ -41,10 +38,13 @@ public class Ball extends Actor {
     @Override
     public void act() {
         LocationToPosition();
-        if (!isInTableBed()) {
-            System.out.println("vel_X: " + vel.x);
-            System.out.println("vel_Y: " + vel.y);
-            keepInBed();
+        if(!vel.isEqual(new GGVector(0,0))) {
+            if (!isInTableBed()) {
+                keepInBed();
+            }
+            else if (isInPocket()) {
+                handlePocketCollision();
+            }
         }
 
         double dt = Duration.between(AccessTime , Instant.now()).toMillis() / 1000f;
@@ -66,21 +66,6 @@ public class Ball extends Actor {
 
     public int getBallNumber() {
         return ballNumber;
-    }
-
-    private boolean isInPocket() {
-        int x = getX();
-        int y = getY();
-
-        for (int[] pocket : POCKETS) {
-            int px = pocket[0];
-            int py = pocket[1];
-
-            if (Math.abs(x-px) <= POCKET_THRESHOLD && Math.abs(y-py) <= POCKET_THRESHOLD) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean isInTableBed() {
@@ -110,8 +95,21 @@ public class Ball extends Actor {
         }
     }
 
+    private boolean isInPocket() {
+        for (GGCircle pocket : PoolTable.pockets) {
+            if (pocket.isIntersecting(pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void handlePocketCollision() {
+        System.out.println("drin");
+        removeSelf();
+    }
+
     public void setterVel(GGVector velocity) {
-        System.out.println(velocity);
         vel = velocity;
     }
 
